@@ -1,0 +1,9 @@
+version: "3.8"
+
+services:
+  http-server:
+    build:
+      context: ./server/http-server
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
