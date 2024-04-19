@@ -13,7 +13,7 @@ const (
 	refreshTokenExp = time.Hour * 24 * 7
 )
 
-func createToken(username string) (string, string, error) {
+func CreateToken(username string) (string, string, error) {
 	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256,
 		jwt.MapClaims{
 			"username": username,
