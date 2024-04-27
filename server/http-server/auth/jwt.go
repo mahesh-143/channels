@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/gocql/gocql"
 	"github.com/golang-jwt/jwt/v5"
 )
 
@@ -13,11 +14,11 @@ const (
 	refreshTokenExp = time.Hour * 24 * 7
 )
 
-func CreateToken(username string) (string, string, error) {
+func CreateToken(user_id gocql.UUID) (string, string, error) {
 	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256,
 		jwt.MapClaims{
-			"username": username,
-			"exp":      time.Now().Add(accessTokenExp).Unix(),
+			"user_id": user_id,
+			"exp":     time.Now().Add(accessTokenExp).Unix(),
 		})
 
 	accessTokenString, err := accessToken.SignedString([]byte(secretKey))
@@ -27,8 +28,8 @@ func CreateToken(username string) (string, string, error) {
 
 	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256,
 		jwt.MapClaims{
-			"username": username,
-			"exp":      time.Now().Add(refreshTokenExp).Unix(),
+			"user_id": user_id,
+			"exp":     time.Now().Add(refreshTokenExp).Unix(),
 		})
 
 	refreshTokenString, err := refreshToken.SignedString([]byte(secretKey))
@@ -39,17 +40,20 @@ func CreateToken(username string) (string, string, error) {
 	return accessTokenString, refreshTokenString, nil
 }
 
-func verifyToken(tokenString string) error {
+func verifyToken(tokenString string) (*jwt.Token, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		return secretKey, nil
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return []byte(secretKey), nil
 	})
 	if err != nil {
-		return err
+		return token, err
 	}
 
 	if !token.Valid {
-		return fmt.Errorf("invalid token")
+		return token, fmt.Errorf("invalid token")
 	}
 
-	return nil
+	return token, nil
 }

@@ -15,6 +15,7 @@ func main() {
 
 	router.HandleFunc("POST /api/user", auth_handler.Register)
 	router.HandleFunc("POST /api/auth/login", auth_handler.Login)
+	router.HandleFunc("POST /api/auth/refreshtoken", auth_handler.RefreshToken)
 
 	server := http.Server{
 		Addr: ":8080",
