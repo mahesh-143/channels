@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/gocql/gocql"
 	"github.com/golang-jwt/jwt/v5"
 )
 
@@ -14,7 +13,7 @@ const (
 	refreshTokenExp = time.Hour * 24 * 7
 )
 
-func CreateToken(user_id gocql.UUID) (string, string, error) {
+func CreateToken(user_id string) (string, string, error) {
 	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256,
 		jwt.MapClaims{
 			"user_id": user_id,

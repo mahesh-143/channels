@@ -69,7 +69,7 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	newUser.CreatedAt = time.Now()
-	newUser.UserID = gocql.TimeUUID()
+	newUser.UserID = gocql.MustRandomUUID().String()
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(newUser.Password), bcrypt.DefaultCost)
 	if err != nil {
