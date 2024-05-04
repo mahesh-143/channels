@@ -1,4 +1,4 @@
-package main
+package db
 
 import (
 	"fmt"
@@ -9,7 +9,7 @@ import (
 
 var Session *gocql.Session
 
-func initDb() {
+func InitDb() {
 	var err error
 	cluster := gocql.NewCluster("127.0.0.1")
 	cluster.Keyspace = "channels_db"
